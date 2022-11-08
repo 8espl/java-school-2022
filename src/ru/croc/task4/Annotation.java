@@ -1,5 +1,4 @@
 package ru.croc.task4;
-import ru.croc.task4.Figure;
 
 public class Annotation {
     private String name;
