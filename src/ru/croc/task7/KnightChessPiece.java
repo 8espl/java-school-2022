@@ -1,6 +1,6 @@
 package ru.croc.task7;
 
-import ru.croc.task5.Annotation;
+import ru.croc.task7.exceptions.*;
 
 public class KnightChessPiece {
     public static boolean canMoveCorrectly(ChessPosition pos1, ChessPosition pos2) {

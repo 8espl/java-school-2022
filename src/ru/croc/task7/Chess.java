@@ -3,10 +3,10 @@ package ru.croc.task7;
 public class Chess {
     public static void main(String[] args) {
         try {
-            String[] testPositions = new String[] {"g8", "e7", "c8"};
+            String[] testPositions = new String[] {"g8", "e7", "c10"};
             //String[] testPositions = args;
 
-            //если позиция одна, то выводим только ее, если больше, то двигаем коня
+            // если позиция одна, то выводим только ее, если больше, то двигаем коня
             if (testPositions.length == 1) {
                 System.out.println(ChessPosition.parse(testPositions[0]).toString());
             } else {
