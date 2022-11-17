@@ -31,7 +31,9 @@ public class CommentsRemoval {
     }
 
     public static String removeJavaComments(String source) {
-        Pattern pattern = Pattern.compile("\\/\\*[\\s\\S]*?\\*\\/|\\/\\/.*");
+        Pattern pattern = Pattern.compile("\\/\\*([^*]|\\*(?!\\/))*\\*\\/|" +
+                "\\/\\/[^\\n\'\"]*+(\\n|$)");
+
         Matcher matcher = pattern.matcher(source);
 
         return matcher.replaceAll("");
