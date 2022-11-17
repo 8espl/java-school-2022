@@ -11,14 +11,21 @@ public class PriceTag {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
 
-        System.out.println("Enter locale language and region");
-        String language = in.nextLine();
-        String region = in.nextLine();
+        System.out.println("To see possible values of language and region enter \"yes\".");
+        if (in.nextLine().equals("yes")) {
+            printPossibleLocaleValues();
+        }
+
+        System.out.println("Enter locale language: ");
+        // обрабатываем ввод, и если случайно введены пробелы, то удаляем их
+        String language = in.nextLine().replaceAll("\\s+","");
+        System.out.println("Enter locale region: ");
+        String region = in.nextLine().replaceAll("\\s+","");
 
         Locale locale = setNewLocale(language, region);
         NumberFormat format = NumberFormat.getCurrencyInstance(locale);
 
-        System.out.println("Enter number");
+        System.out.println("Enter number using example: 11,11");
 
         while (in.hasNextLine()) {
             // если формат введенного числа неверный, то прерываем программу
@@ -38,8 +45,8 @@ public class PriceTag {
     public static Locale setNewLocale(String language, String region) {
         Scanner in = new Scanner(System.in);
 
-        // если язык не указан, то устанавливаем дефолтные значения
-        if (!language.isEmpty()) {
+        // если язык и регион не указан, то устанавливаем дефолтные значения
+        if (!(language.isEmpty() && region.isEmpty())) {
             // если язык или регион введены с ошибкой, то устанавливаем дефолтные значения
             try {
                 return (new Locale.Builder().setRegion(region).setLanguage(language).build());
@@ -67,7 +74,8 @@ public class PriceTag {
     public static void printPossibleLocaleValues() {
         Locale[] locales = Locale.getAvailableLocales();
         for (Locale loc : locales) {
-            System.out.println(loc);
+            if (!loc.getCountry().isEmpty())
+                System.out.println("Language: " + loc.getLanguage() + "   Region: " + loc.getCountry());
         }
     }
 
