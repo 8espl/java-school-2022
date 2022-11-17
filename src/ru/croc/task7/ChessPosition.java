@@ -34,35 +34,27 @@ public class ChessPosition {
         switch (currentAlphabetPosition) {
             case 'a' -> {
                 x = 0;
-                break;
             }
             case 'b' -> {
                 x = 1;
-                break;
             }
             case 'c' -> {
                 x = 2;
-                break;
             }
             case 'd' -> {
                 x = 3;
-                break;
             }
             case 'e' -> {
                 x = 4;
-                break;
             }
             case 'f' -> {
                 x = 5;
-                break;
             }
             case 'g' -> {
                 x = 6;
-                break;
             }
             case 'h' -> {
                 x = 7;
-                break;
             }
             default -> {
                 throw new IllegalPositionException("First coordinate of chess piece '" + currentAlphabetPosition + "' position is invalid." +
