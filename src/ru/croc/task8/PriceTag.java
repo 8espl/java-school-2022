@@ -46,7 +46,7 @@ public class PriceTag {
         Scanner in = new Scanner(System.in);
 
         // если язык и регион не указан, то устанавливаем дефолтные значения
-        if (!(language.isEmpty() && region.isEmpty())) {
+        if (!(language.isEmpty() || region.isEmpty())) {
             // если язык или регион введены с ошибкой, то устанавливаем дефолтные значения
             try {
                 return (new Locale.Builder().setRegion(region).setLanguage(language).build());
