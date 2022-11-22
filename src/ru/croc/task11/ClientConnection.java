@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ClientConnection implements Runnable {
-    public static ArrayList<ClientConnection> clientConnections = new ArrayList<>();
+    public static ArrayList<ClientConnection> clientConnections = new ArrayList<>(); // список всех поделюченных пользователей
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
