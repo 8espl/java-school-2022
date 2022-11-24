@@ -3,17 +3,19 @@ package ru.croc.task9;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static ru.croc.task9.PasswordCrackerRunnable.hashPassword;
+
 public class PasswordCracking {
     public static final char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     public static void main(String[] args) {
 
-        int threadsNumber = Integer.parseInt(args[0]);
-        String hash = args[1];
+        //int threadsNumber = Integer.parseInt(args[0]);
+        //String hash = args[1];
 
-        //String hash = hashPassword("dog");
-        //int threadsNumber = alphabet.length;
-        int passwordLength = 3;
+        String hash = hashPassword("passwrd");
+        int threadsNumber = alphabet.length;
+        int passwordLength = 7;
 
         int lengthSet = alphabet.length / threadsNumber; // размер области алфавита, в которой каждый поток ищет пароль
 
@@ -25,7 +27,7 @@ public class PasswordCracking {
         }
 
         int end = 0;
-        try{
+        try {
             ExecutorService executorService = Executors.newFixedThreadPool(threadsNumber);
             // для каждой области алфавита создаем свой поток
             while (end < alphabet.length) {

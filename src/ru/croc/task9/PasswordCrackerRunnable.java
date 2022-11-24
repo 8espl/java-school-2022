@@ -2,6 +2,7 @@ package ru.croc.task9;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static ru.croc.task9.PasswordCracking.alphabet;
 
@@ -11,7 +12,7 @@ public class PasswordCrackerRunnable implements Runnable {
     private int passwordLength;
     private int start; // начальные символ алфавита, на который поток будет искать пароль
     private int end; // последний символ алфавита, на который поток будет искать пароль
-    private boolean isFound = false;
+    private static AtomicBoolean isFound = new AtomicBoolean(false);
     private String password;
 
     public PasswordCrackerRunnable(String hash, int passwordLength, int start, int end) {
@@ -22,8 +23,9 @@ public class PasswordCrackerRunnable implements Runnable {
     }
 
     public void getPossiblePassword(StringBuilder sb, int n) {
-        if (isFound)
+        if (isFound.get())
             return;
+
         // когда набрали новый пароль, проверяем его на совпадение с заданным хешированным
         if (n == sb.length()) {
             String possiblePassword = sb.toString();
@@ -31,13 +33,14 @@ public class PasswordCrackerRunnable implements Runnable {
 
             if (hash.equals(possibleHashPassword)) {
                 password = possiblePassword;
-                isFound = true;
+                System.out.println("Password = '" + password + "'");
+                isFound.set(true);
             }
             return;
         }
 
         // если символов не хватает, то рекурсивно добираем в алфавитном порядке символы
-        for (int i = 0; i < alphabet.length && !isFound; ++i) {
+        for (int i = 0; i < alphabet.length && !isFound.get(); ++i) {
             char nextSymbol = alphabet[i];
             sb.setCharAt(n, nextSymbol);
             getPossiblePassword(sb, n + 1);
@@ -49,6 +52,7 @@ public class PasswordCrackerRunnable implements Runnable {
         область ответственности потока - начальные буквы пароля,
         которые содержатся в алфавите с индекса [start] до [end-1]
          */
+
         for (int i = start; i < end; ++i) {
             StringBuilder sb = new StringBuilder();
             sb.setLength(passwordLength);
@@ -56,11 +60,9 @@ public class PasswordCrackerRunnable implements Runnable {
             getPossiblePassword(sb, 1); // ищем остальные символы и проверяем на совпадение
         }
 
-        if (isFound) {
-            System.out.println("Password = '" + password + "'");
-        } else {
+        if (!(isFound.get())) {
             System.out.println("Password starting with symbol from '" + alphabet[start] +
-                    "' to '" + alphabet[end-1] + "' is not found.");
+                    "' to '" + alphabet[end - 1] + "' is not found.");
         }
     }
 
