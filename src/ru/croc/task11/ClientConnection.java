@@ -2,10 +2,10 @@ package ru.croc.task11;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientConnection implements Runnable {
-    public static ArrayList<ClientConnection> clientConnections = new ArrayList<>(); // список всех поделюченных пользователей
+    public static CopyOnWriteArrayList<ClientConnection> clientConnections = new CopyOnWriteArrayList<>(); // список всех подключенных пользователей
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
