@@ -26,6 +26,6 @@ public class OnlineMovieTheater {
         User user = new User(userHistory);
 
         MovieRecommender movieRecommender = new MovieRecommender(serviceMovies, serviceHistory);
-        System.out.println("Рекомендуем к просмотру фильм \"" + movieRecommender.Recommendation(user) + "\"");
+        System.out.println("Рекомендуем к просмотру фильм \"" + movieRecommender.CreateRecommendation(user) + "\"");
     }
 }

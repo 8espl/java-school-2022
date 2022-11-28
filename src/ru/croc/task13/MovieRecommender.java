@@ -11,7 +11,7 @@ public class MovieRecommender {
         this.serviceMovies = serviceMovies;
     }
 
-    public String Recommendation(User user) {
+    public String CreateRecommendation(User user) {
 
         Map<Integer, String> movies = new HashMap<>();
         for (String movie : serviceMovies) {
@@ -19,18 +19,18 @@ public class MovieRecommender {
                     movie.substring(movie.indexOf(",") + 1));
         }
 
-        // пользователи, на основе которых создается рекомендация, с коэффициентом важности рекомендации
-        Map<User, Double> usersForRecommendation = new HashMap<>();
+        // находим пользователей, на основе которых cчитается вес рекомендации
+        Map<User, Double> similarUsers = new HashMap<>();
 
         for (String cacheHistory : serviceHistory) {
             User cacheUser = new User(cacheHistory);
             double similarity = CompareUsers(cacheUser, user);
             if (similarity >= 0.5) {
-                usersForRecommendation.put(cacheUser, similarity);
+                similarUsers.put(cacheUser, similarity);
             }
         }
 
-        int recommendationID = MostWatchedMovie(usersForRecommendation, user);
+        int recommendationID = BestRecommendation(similarUsers, user, movies);
         if (recommendationID == -1) {
             // случай, когда вкус пользователя хотя бы на 50% не совпал ни с кем из другмх пользователей
             return "К сожалению, мы не можем составить для вас рекомендацию. Посмотрите любой фильм.";
@@ -63,60 +63,81 @@ public class MovieRecommender {
     }
 
     /**
-     * @param usersForRecommendation <пользователи сервиса со схожим вкусов, вес их рекомендаций>
-     * @param user                   пользователь, для которого составляем рекомендацию
+     * @param similarUsers <пользователи сервиса со схожим вкусов, вес их рекомендаций>
+     * @param user         пользователь, для которого составляем рекомендацию
+     * @param movies       все фильмы сервиса
      * @return непросмотренный фильм, который чаще всего смотрели пользователи со схожими вкусами
      */
-    public int MostWatchedMovie(Map<User, Double> usersForRecommendation, User user) {
-        int maxRatingMovieID = -1;  // максимальный рейтинг(количество просмотров*вес рекомеендации)
-        Map<Integer, Double> moviesRating; // непросмотренный фильм и его общий рейтинг
-        List<Integer> moviesIDForRecommendation = new ArrayList<>(); // непросмотренные фильмы, доступные к рекомендации
+    public int BestRecommendation(Map<User, Double> similarUsers, User user, Map<Integer, String> movies) {
+        int maxRecID = -1;  // максимальный рейтинг(количество просмотров * сумма веса рекомендаций)
+        Map<Integer, Double> moviesRating; // непросмотренный фильм и его общий вес рекомендаций
+        Map<Integer, Integer> moviesViews; // количество просмотров фильмов, которые пользователь еще не смотрел
         List<String> userHistory = Arrays.asList(user.getHistory().split(","));
 
-        // создаем список только непросмотренных пользователем фильмов
+        // оставляем в списке фильмов только непросмотренные пользователем
         for (int i = 0; i < serviceMovies.size(); ++i) {
-            if (!(userHistory.contains(String.valueOf(i + 1)))) {
-                moviesIDForRecommendation.add(i + 1);
+            if (userHistory.contains(String.valueOf(i + 1))) {
+                movies.remove(i + 1);
             }
         }
 
         // если есть фильмы, которые пользователь не смотрел
-        if (moviesIDForRecommendation.size() != 0) {
-            moviesRating = CountMoviesRating(usersForRecommendation, moviesIDForRecommendation);
-            Double maxRating = Collections.max(moviesRating.values());
+        if (movies.size() != 0) {
+            moviesRating = CountMoviesRating(similarUsers, movies);
+            moviesViews = CountMoviesViews(movies);
 
-            // среди всех фильмов, которые можно порекомендовать, ищем фильм с максимальным найденным рейтингом
-            for (Map.Entry<Integer, Double> entry :
-                    moviesRating.entrySet()) {
-                if (entry.getValue().equals(maxRating)) {
-                    maxRatingMovieID = entry.getKey();
-                    break;
+            double maxRec = 0.;
+            double rec = 0.;
+            // поиск наибольшего взвешенного рейтинга
+            for (Integer id : moviesRating.keySet()) {
+                rec = moviesRating.get(id) * moviesViews.get(id);
+                if (rec > maxRec) {
+                    maxRec = rec;
+                    maxRecID = id;
                 }
             }
+
         }
-        return maxRatingMovieID;
+        return maxRecID;
     }
 
     /**
-     * считает рейтинг фильмов (которые пользователь еще не смотрел)
-     * по историям всех пользователей со схожим вкусом,
-     * прибавляя к рейтингу вес рекомендаций каждый раз, когда в истории встречается этот фильм
+     * @param similarUsers <пользователи сервиса со схожим вкусов, вес их рекомендаций>
+     * @param movies       непросмотренные фильмы
+     * @return <фильм, оценка фильма по историям всех пользователей со схожим вкусом>
      */
-    public Map<Integer, Double> CountMoviesRating(Map<User, Double> usersForRecommendation, List<Integer> moviesIDForRecommendation) {
-        Map<Integer, Double> moviesRating = new HashMap<>();
+    public Map<Integer, Double> CountMoviesRating(Map<User, Double> similarUsers, Map<Integer, String> movies) {
+        Map<Integer, Double> moviesRating = new HashMap<>(); // ID фильма и его рейтинг
 
-        for (User cacheUser : usersForRecommendation.keySet()) {
+        for (User cacheUser : similarUsers.keySet()) {
             String[] cacheUserHistory = cacheUser.getHistory().split(",");
             for (String movie : cacheUserHistory) {
-                if (moviesIDForRecommendation.contains(Integer.parseInt(movie))) {
-                    if (moviesRating.get(Integer.parseInt(movie)) != null) {
-                        moviesRating.put(Integer.parseInt(movie), moviesRating.get(Integer.parseInt(movie)) + usersForRecommendation.get(cacheUser));
-                    } else {
-                        moviesRating.put(Integer.parseInt(movie), usersForRecommendation.get(cacheUser));
-                    }
+                int movieID = Integer.parseInt(movie);
+                // учитываем рейтинг только непросмотренных фильмов
+                if (movies.containsKey(movieID)) {
+                    // проверяем, встречался ли уже такой фильм, и если встречался, увеличиваем рейтинг
+                    moviesRating.merge(movieID, similarUsers.get(cacheUser), Double::sum);
                 }
             }
         }
         return moviesRating;
+    }
+
+    /**
+     * @param movies непросмотренные фильмы
+     * @return <фильм, количество просмотров всех пользователей сервиса>
+     */
+    public Map<Integer, Integer> CountMoviesViews(Map<Integer, String> movies) {
+        Map<Integer, Integer> moviesViews = new HashMap<>(); // ID фильма и его рейтинг
+
+        for (String cacheHistory : serviceHistory) {
+            List<String> cacheUserHistory = Arrays.asList(cacheHistory.split(","));
+            for (Integer movie : movies.keySet()) {
+                if (cacheUserHistory.contains(String.valueOf(movie))) {
+                    moviesViews.merge(movie, 1, Integer::sum);
+                }
+            }
+        }
+        return moviesViews;
     }
 }
