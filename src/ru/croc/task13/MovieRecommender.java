@@ -3,34 +3,28 @@ package ru.croc.task13;
 import java.util.*;
 
 public class MovieRecommender {
-    private List<String> serviceMovies;
+    private Map<Integer, String> serviceMovies;
     private List<String> serviceHistory;
 
-    public MovieRecommender(List<String> serviceMovies, List<String> serviceHistory) {
+    public MovieRecommender(Map<Integer, String> serviceMovies, List<String> serviceHistory) {
         this.serviceHistory = serviceHistory;
         this.serviceMovies = serviceMovies;
     }
 
-    public String CreateRecommendation(User user) {
-
-        Map<Integer, String> movies = new HashMap<>();
-        for (String movie : serviceMovies) {
-            movies.put(Integer.valueOf(movie.substring(0, movie.indexOf(","))),
-                    movie.substring(movie.indexOf(",") + 1));
-        }
-
+    public String createRecommendation(User user) {
+        Map<Integer, String> movies = new HashMap<>(serviceMovies);
         // находим пользователей, на основе которых cчитается вес рекомендации
         Map<User, Double> similarUsers = new HashMap<>();
 
         for (String cacheHistory : serviceHistory) {
             User cacheUser = new User(cacheHistory);
-            double similarity = CompareUsers(cacheUser, user);
+            double similarity = compareUsers(cacheUser, user);
             if (similarity >= 0.5) {
                 similarUsers.put(cacheUser, similarity);
             }
         }
 
-        int recommendationID = BestRecommendation(similarUsers, user, movies);
+        int recommendationID = bestRecommendation(similarUsers, user, movies);
         if (recommendationID == -1) {
             // случай, когда вкус пользователя хотя бы на 50% не совпал ни с кем из другмх пользователей
             return "К сожалению, мы не можем составить для вас рекомендацию. Посмотрите любой фильм.";
@@ -44,7 +38,7 @@ public class MovieRecommender {
      * @param user      пользователь, для которого составляем рекомендацию
      * @return вес рекомендаций пользователя сервиса
      */
-    public double CompareUsers(User cacheUser, User user) {
+    public double compareUsers(User cacheUser, User user) {
         // истории просмотра пользователя, для которого ищем рекомендацию, и пользователя из кэша сервиса
         List<String> cacheUserHistory = Arrays.asList(cacheUser.getHistory().split(","));
         List<String> userHistory = Arrays.asList(user.getHistory().split(","));
@@ -68,7 +62,7 @@ public class MovieRecommender {
      * @param movies       все фильмы сервиса
      * @return непросмотренный фильм, который чаще всего смотрели пользователи со схожими вкусами
      */
-    public int BestRecommendation(Map<User, Double> similarUsers, User user, Map<Integer, String> movies) {
+    public int bestRecommendation(Map<User, Double> similarUsers, User user, Map<Integer, String> movies) {
         int maxRecID = -1;  // максимальный рейтинг(количество просмотров * сумма веса рекомендаций)
         Map<Integer, Double> moviesRating; // непросмотренный фильм и его общий вес рекомендаций
         Map<Integer, Integer> moviesViews; // количество просмотров фильмов, которые пользователь еще не смотрел
@@ -83,8 +77,8 @@ public class MovieRecommender {
 
         // если есть фильмы, которые пользователь не смотрел
         if (movies.size() != 0) {
-            moviesRating = CountMoviesRating(similarUsers, movies);
-            moviesViews = CountMoviesViews(movies);
+            moviesRating = countMoviesRating(similarUsers, movies);
+            moviesViews = countMoviesViews(movies);
 
             double maxRec = 0.;
             double rec = 0.;
@@ -106,7 +100,7 @@ public class MovieRecommender {
      * @param movies       непросмотренные фильмы
      * @return <фильм, оценка фильма по историям всех пользователей со схожим вкусом>
      */
-    public Map<Integer, Double> CountMoviesRating(Map<User, Double> similarUsers, Map<Integer, String> movies) {
+    public Map<Integer, Double> countMoviesRating(Map<User, Double> similarUsers, Map<Integer, String> movies) {
         Map<Integer, Double> moviesRating = new HashMap<>(); // ID фильма и его рейтинг
 
         for (User cacheUser : similarUsers.keySet()) {
@@ -127,7 +121,7 @@ public class MovieRecommender {
      * @param movies непросмотренные фильмы
      * @return <фильм, количество просмотров всех пользователей сервиса>
      */
-    public Map<Integer, Integer> CountMoviesViews(Map<Integer, String> movies) {
+    public Map<Integer, Integer> countMoviesViews(Map<Integer, String> movies) {
         Map<Integer, Integer> moviesViews = new HashMap<>(); // ID фильма и его рейтинг
 
         for (String cacheHistory : serviceHistory) {
