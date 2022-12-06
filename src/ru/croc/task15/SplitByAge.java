@@ -8,7 +8,7 @@ public class SplitByAge {
     private static int maxAge = 123;
 
     public static void main(String[] args) {
-        //args = new String[]{"18", "25", "35", "45", "60", "80", "100"};
+        args = new String[]{"18", "25", "35", "45", "60", "80", "100"};
         List<Integer> ages = Arrays.stream(Stream.of(args).mapToInt(Integer::parseInt).toArray()).boxed().toList();
         List<AgeGroup> ageGroups = new ArrayList<>();
 
@@ -50,9 +50,9 @@ public class SplitByAge {
         if (correct) {
             groups.add(new AgeGroup(minAge, ages.get(0)));
             for (int i = 1; i < ages.size(); ++i) {
-                groups.add(new AgeGroup((ages.get(i - 1)), ages.get(i)));
+                groups.add(new AgeGroup((ages.get(i - 1) + 1), ages.get(i)));
             }
-            groups.add(new AgeGroup(ages.get(ages.size() - 1), maxAge));
+            groups.add(new AgeGroup(ages.get(ages.size() - 1) + 1, maxAge));
 
             // сортируем возрастные группы в порядке от старшей к младшей
             groups.sort((g1, g2) -> -Integer.compare(g1.getStartAge(), (g2.getStartAge())));
