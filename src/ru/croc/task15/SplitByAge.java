@@ -8,7 +8,7 @@ public class SplitByAge {
     private static int maxAge = 123;
 
     public static void main(String[] args) {
-        args = new String[]{"18", "25", "35", "45", "60", "80", "100"};
+        // args = new String[]{"18", "25", "35", "45", "60", "80", "100"};
         List<Integer> ages = Arrays.stream(Stream.of(args).mapToInt(Integer::parseInt).toArray()).boxed().toList();
         List<AgeGroup> ageGroups = new ArrayList<>();
 
