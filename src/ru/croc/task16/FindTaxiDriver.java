@@ -8,8 +8,8 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class FindTaxiDriver {
-    private static final Set<String> carType = new HashSet<>(List.of("эконом", "стандарт", "комфорт"));
-    private static final Set<String> specialRequests = new HashSet<>(List.of("детское кресло", "с питомцем", "по платной дороге", "подходит для людей с ограниченными возможностями"));
+    private static final Set<String> carType = new HashSet<>(Arrays.asList("эконом", "стандарт", "комфорт"));
+    private static final Set<String> specialRequests = new HashSet<>(Arrays.asList("детское кресло", "с питомцем", "по платной дороге", "подходит для людей с ограниченными возможностями"));
     private static List<TaxiDriver> drivers = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -28,9 +28,9 @@ public class FindTaxiDriver {
 
         // обработка ввода класса комфорта
         System.out.println("Какой класс комфорта Вы предпочитаете? " + carType);
-        String carType = in.nextLine().toLowerCase();
+        String carType = in.nextLine().toLowerCase().trim();
         try {
-            if (!FindTaxiDriver.carType.contains(carType.trim())) {
+            if (!FindTaxiDriver.carType.contains(carType)) {
                 throw new Exception("Неправильно введен класс комфорта!");
             }
         } catch (Exception wrongType) {
@@ -38,22 +38,22 @@ public class FindTaxiDriver {
         }
 
         // обрвботка ввода особых пожеланий
-        System.out.println("Если у Вас есть особые пожелания, перечислите их через запятую. Доступные: " + specialRequests.toString());
-        List<String> requests = new ArrayList<>(List.of(in.nextLine().toLowerCase().split(",")));
-        requests.replaceAll(String::trim);
-        try {
-            requests.forEach(request -> {
-                        if (!specialRequests.contains(request)) {
-                            try {
-                                throw new Exception("Неправильно введены особые пожелания!");
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
+        System.out.println("У Вас есть особые пожелания? Если есть, введите \"Да\". Доступные: " + specialRequests);
+        List<String> requests = new ArrayList<>();
+        if (in.nextLine().equalsIgnoreCase("да")) {
+            System.out.println("Через запятую введите свои особые пожелания: ");
+            requests = Arrays.asList(in.nextLine().toLowerCase().split(","));
+            requests.replaceAll(String::trim);
+
+            try {
+                for (String request : requests) {
+                    if (!specialRequests.contains(request)) {
+                        throw new Exception("Неправильно введены особые пожелания!");
                     }
-            );
-        } catch (Exception wrongRequest){
-            System.out.println(wrongRequest.getMessage());
+                }
+            } catch (Exception wrongRequest) {
+                System.out.println(wrongRequest.getMessage());
+            }
         }
 
         // пользователь, для которого ищем водителя
@@ -72,7 +72,7 @@ public class FindTaxiDriver {
         // функция, определяющая, все ли особые пожелания водитель может выполнить
         Predicate<HashSet<String>> hasNeededRequests = requests -> {
             for (String userRequest : user.getRequests()) {
-                if (!requests.contains(userRequest.toLowerCase())) return false;
+                if (!requests.contains(userRequest)) return false;
             }
             return true;
         };
@@ -85,7 +85,7 @@ public class FindTaxiDriver {
         });
 
         // ищем самого ближайшего водителя
-        if (!drivers.isEmpty()) {
+        if (drivers.size() != 0) {
             if (suitableDrivers.size() > 1) {
                 suitableDrivers.sort(Comparator.comparingDouble(d -> d.getLocation().distance(user.getLocation())));
             }
