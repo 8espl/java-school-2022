@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class CommentsFilter<T> implements BlackListFilter<T> {
-
-    Predicate<T> prediction;
+    private Predicate<T> prediction;
 
     public CommentsFilter(Predicate<T> prediction) {
         this.prediction = prediction;
