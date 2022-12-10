@@ -4,11 +4,11 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class SplitByAge {
-    private static int minAge = 0;
-    private static int maxAge = 123;
+    private final static int MIN_AGE = 0;
+    private final static int MAX_AGE = 123;
 
     public static void main(String[] args) {
-        // args = new String[]{"18", "25", "35", "45", "60", "80", "100"};
+        //args = new String[]{"18", "25", "35", "45", "60", "80", "100"};
         List<Integer> ages = Arrays.stream(Stream.of(args).mapToInt(Integer::parseInt).toArray()).boxed().toList();
         List<AgeGroup> ageGroups = new ArrayList<>();
 
@@ -48,11 +48,11 @@ public class SplitByAge {
         // проверяем, правильно ли были введены границы возрастных групп
         boolean correct = ages.stream().allMatch(val -> val > -1 && val < 124);
         if (correct) {
-            groups.add(new AgeGroup(minAge, ages.get(0)));
+            groups.add(new AgeGroup(MIN_AGE, ages.get(0)));
             for (int i = 1; i < ages.size(); ++i) {
                 groups.add(new AgeGroup((ages.get(i - 1) + 1), ages.get(i)));
             }
-            groups.add(new AgeGroup(ages.get(ages.size() - 1) + 1, maxAge));
+            groups.add(new AgeGroup(ages.get(ages.size() - 1) + 1, MAX_AGE));
 
             // сортируем возрастные группы в порядке от старшей к младшей
             groups.sort((g1, g2) -> -Integer.compare(g1.getStartAge(), (g2.getStartAge())));
@@ -60,7 +60,7 @@ public class SplitByAge {
             return groups;
         } else {
             throw new Exception("Неправильно введены границы возрастных групп! Минимальный возраст = " +
-                    minAge + ", максимальный возраст = " + maxAge + ".");
+                    MIN_AGE + ", максимальный возраст = " + MAX_AGE + ".");
         }
     }
 
@@ -68,9 +68,9 @@ public class SplitByAge {
         for (String respondent : respondents) {
             Person person = new Person(respondent);
             int age = person.getAge();
-            if (age > maxAge || age < minAge) {
+            if (age > MAX_AGE || age < MIN_AGE) {
                 throw new Exception("Неправильно введен возраст у: " + person.getName() + "! Минимальный возраст = " +
-                        minAge + ", максимальный возраст = " + maxAge + ".");
+                        MIN_AGE + ", максимальный возраст = " + MAX_AGE + ".");
             }
             for (AgeGroup group : groups) {
                 if (age >= group.getStartAge() && age <= group.getEndAge()) {
@@ -82,6 +82,6 @@ public class SplitByAge {
     }
 
     public static int getMaxAge() {
-        return maxAge;
+        return MAX_AGE;
     }
 }

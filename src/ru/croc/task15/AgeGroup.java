@@ -1,11 +1,18 @@
 package ru.croc.task15;
 
-import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class AgeGroup {
     private int startAge;
     private int endAge;
-    private ArrayList<Person> groupMembers = new ArrayList<>();
+    private SortedSet<Person> groupMembers = new TreeSet<>((p1, p2) -> {
+        if (p1.getAge() != p2.getAge()) {
+            return (-1 * Integer.compare(p1.getAge(), p2.getAge()));
+        } else {
+            return p1.getName().compareTo(p2.getName());
+        }
+    });
 
     public AgeGroup(int startAge, int endAge) {
         this.startAge = startAge;
@@ -14,16 +21,6 @@ public class AgeGroup {
 
     void addMember(Person newMember) {
         groupMembers.add(newMember);
-        // сортируем респондентов по возрасту в порядке убывания, если возраст совпадает - по ФИО в порядке возрастания
-        if (groupMembers.size() > 1) {
-            groupMembers.sort((p1, p2) -> {
-                if (p1.getAge() != p2.getAge()) {
-                    return (-1 * Integer.compare(p1.getAge(), p2.getAge()));
-                } else {
-                    return p1.getName().compareTo(p2.getName());
-                }
-            });
-        }
     }
 
     @Override
@@ -52,7 +49,7 @@ public class AgeGroup {
         return endAge;
     }
 
-    public ArrayList<Person> getGroupMembers() {
+    public SortedSet<Person> getGroupMembers() {
         return groupMembers;
     }
 }

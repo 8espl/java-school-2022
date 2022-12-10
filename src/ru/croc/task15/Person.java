@@ -2,14 +2,9 @@ package ru.croc.task15;
 
 import java.util.Objects;
 
-public class Person implements Comparable {
+public class Person implements Comparable<Person> {
     private String name;
     private int age;
-
-    public Person(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
 
     public Person(String info) {
         this.name = info.substring(0, info.indexOf(","));
@@ -27,12 +22,11 @@ public class Person implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        Person person = (Person) o;
-        if (this.age == person.age) {
-            return this.name.compareTo(person.name);
+    public int compareTo(Person p) {
+        if (this.age == p.age) {
+            return this.name.compareTo(p.name);
         } else {
-            return Integer.compare(this.age, person.age);
+            return Integer.compare(this.age, p.age);
         }
     }
 
