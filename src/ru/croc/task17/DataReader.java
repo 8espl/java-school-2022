@@ -20,7 +20,7 @@ public class DataReader {
     public void readData(Set<Product> products, Set<Order> orders, Set<OrderItem> orderItems) throws IOException {
         // чтобы отслеживать уникальность значений в коллекциях
         Set<Integer> ordersID = new HashSet<>();
-        Set<String> productsID = new HashSet<>();
+        Set<String> productsCodes = new HashSet<>();
         Map<String, OrderItem> orderItemsInfo = new HashMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(source))) {
@@ -30,7 +30,7 @@ public class DataReader {
             while ((line = reader.readLine()) != null) {
                 info = line.split(",");
 
-                if (productsID.add(info[2])){
+                if (productsCodes.add(info[2])){
                     products.add(new Product(info[2], info[3], Integer.parseInt(info[4])));
                 }
 

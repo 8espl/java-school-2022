@@ -1,18 +1,18 @@
 package ru.croc.task17.entity;
 
 public class Product {
-    private String ID;
+    private String code;
     private String name;
     private int price;
 
-    public Product(String ID, String name, int price) {
-        this.ID = ID;
+    public Product(String code, String name, int price) {
+        this.code = code;
         this.name = name;
         this.price = price;
     }
 
-    public String getID() {
-        return ID;
+    public String getCode() {
+        return code;
     }
 
     public String getName() {
@@ -21,5 +21,10 @@ public class Product {
 
     public int getPrice() {
         return price;
+    }
+
+    @Override
+    public String toString() {
+        return "Product: " + code + ", " + name + ", " + price + ";";
     }
 }

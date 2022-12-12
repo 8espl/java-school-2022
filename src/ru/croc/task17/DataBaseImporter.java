@@ -1,6 +1,5 @@
 package ru.croc.task17;
 
-
 import ru.croc.task17.entity.Order;
 import ru.croc.task17.entity.OrderItem;
 import ru.croc.task17.entity.Product;
@@ -40,21 +39,21 @@ public class DataBaseImporter {
 
     private static void createTablesDB(Connection connection) throws SQLException {
         String createProductsTable = "CREATE TABLE products" +
-                "(id VARCHAR(10) NOT NULL PRIMARY KEY," +
+                "(code VARCHAR(10) NOT NULL PRIMARY KEY," +
                 "name VARCHAR(64) NOT NULL," +
                 "price INT NOT NULL);";
 
         String createOrdersTable = "CREATE TABLE orders" +
                 "(id INT PRIMARY KEY," +
-                "username VARCHAR(64) NOT NULL);";
+                "user_login VARCHAR(64) NOT NULL);";
 
         String createOrdersItemsTable = "CREATE TABLE order_items" +
                 "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," +
                 "order_id INT NOT NULL," +
-                "product_id VARCHAR(10) NOT NULL," +
+                "product_code VARCHAR(10) NOT NULL," +
                 "quantity INT NOT NULL," +
                 "FOREIGN KEY (order_id) REFERENCES orders (id)," +
-                "FOREIGN KEY (product_id) REFERENCES products (id));";
+                "FOREIGN KEY (product_code) REFERENCES products (code));";
         try (Statement statement = connection.createStatement()) {
             statement.execute(createProductsTable);
             statement.execute(createOrdersTable);
@@ -66,7 +65,7 @@ public class DataBaseImporter {
         String sqlProducts = "INSERT INTO products VALUES(?, ?, ?)";
         for (Product product : products) {
             try (PreparedStatement statement = connection.prepareStatement(sqlProducts)) {
-                statement.setString(1, product.getID());
+                statement.setString(1, product.getCode());
                 statement.setString(2, product.getName());
                 statement.setInt(3, product.getPrice());
                 statement.execute();
@@ -77,16 +76,16 @@ public class DataBaseImporter {
         for (Order order : orders) {
             try (PreparedStatement statement = connection.prepareStatement(sqlOrders)) {
                 statement.setInt(1, order.getID());
-                statement.setString(2, order.getUsername());
+                statement.setString(2, order.getUserLogin());
                 statement.execute();
             }
         }
 
-        String sqlOrderItems = "INSERT INTO order_items (order_id, product_id, quantity) VALUES(?, ?, ?)";
+        String sqlOrderItems = "INSERT INTO order_items (order_id, product_code, quantity) VALUES(?, ?, ?)";
         for (OrderItem orderItem : orderItems) {
             try (PreparedStatement statement = connection.prepareStatement(sqlOrderItems)) {
                 statement.setInt(1, orderItem.getOrderID());
-                statement.setString(2, orderItem.getProductID());
+                statement.setString(2, orderItem.getProductCode());
                 statement.setInt(3, orderItem.getQuantity());
                 statement.execute();
             }

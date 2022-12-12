@@ -2,12 +2,12 @@ package ru.croc.task17.entity;
 
 public class OrderItem {
     private int orderID;
-    private String productID;
+    private String productCode;
     private int quantity = 1;
 
-    public OrderItem(int orderID, String productID) {
+    public OrderItem(int orderID, String productCode) {
         this.orderID = orderID;
-        this.productID = productID;
+        this.productCode = productCode;
     }
 
     public void addItem() {
@@ -18,8 +18,8 @@ public class OrderItem {
         return orderID;
     }
 
-    public String getProductID() {
-        return productID;
+    public String getProductCode() {
+        return productCode;
     }
 
     public int getQuantity() {
