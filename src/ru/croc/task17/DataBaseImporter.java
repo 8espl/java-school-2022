@@ -37,7 +37,7 @@ public class DataBaseImporter {
         }
     }
 
-    private static void createTablesDB(Connection connection) throws SQLException {
+    private void createTablesDB(Connection connection) throws SQLException {
         String createProductsTable = "CREATE TABLE products" +
                 "(code VARCHAR(10) NOT NULL PRIMARY KEY," +
                 "name VARCHAR(64) NOT NULL," +
@@ -61,7 +61,7 @@ public class DataBaseImporter {
         }
     }
 
-    private static void importData(Connection connection, Set<Product> products, Set<Order> orders, Set<OrderItem> orderItems) throws SQLException {
+    private void importData(Connection connection, Set<Product> products, Set<Order> orders, Set<OrderItem> orderItems) throws SQLException {
         String sqlProducts = "INSERT INTO products VALUES(?, ?, ?)";
         for (Product product : products) {
             try (PreparedStatement statement = connection.prepareStatement(sqlProducts)) {
