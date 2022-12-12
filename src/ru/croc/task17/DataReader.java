@@ -11,9 +11,9 @@ import java.util.*;
 
 public class DataReader {
 
-    private String source;
+    protected String source;
 
-    DataReader(String source) {
+    public DataReader(String source) {
         this.source = source;
     }
 
@@ -47,7 +47,7 @@ public class DataReader {
      * @return новый созданный товар, если прежде такой не встречался,
      * или созданный прежде товар с данным артикулом
      */
-    private Product readProduct(Set<Product> products, String productCode, String productName, int productPrice) {
+    protected Product readProduct(Set<Product> products, String productCode, String productName, int productPrice) {
         Product productInLine;
 
         if (products.stream().noneMatch(product -> product.getCode().equals(productCode))) {
@@ -89,7 +89,7 @@ public class DataReader {
      * @param productInLine идентифицированный товар из данной строки таблицы
      * @param orderInLine   идентифицированный заказ из данной строки таблицы
      */
-    private void readOrderItem(Set<OrderItem> orderItems, int orderID, String productCode, Product productInLine, Order orderInLine) {
+    protected void readOrderItem(Set<OrderItem> orderItems, int orderID, String productCode, Product productInLine, Order orderInLine) {
         if (orderItems.stream().noneMatch(orderItem -> orderItem.getOrder().getID() == orderID && orderItem.getProduct().getCode().equals(productCode))) {
             orderItems.add(new OrderItem(orderInLine, productInLine));
         } else {

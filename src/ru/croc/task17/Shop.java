@@ -9,5 +9,6 @@ public class Shop {
 
         DataBaseImporter importer = new DataBaseImporter(args[0]);
         importer.loadData(connectionURL, user, password);
+
     }
 }

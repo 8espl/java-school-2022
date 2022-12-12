@@ -10,9 +10,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DataBaseImporter {
-    private String source;
+    protected String source;
 
-    DataBaseImporter(String source) {
+    protected DataBaseImporter(String source) {
         this.source = source;
     }
 
@@ -25,43 +25,46 @@ public class DataBaseImporter {
         try {
             dataReader.readData(products, orders, orderItems);
         } catch (IOException e) {
-            e.printStackTrace();
+           e.printStackTrace();
         }
 
         try (Connection connection = DriverManager.getConnection(connectionURL, user, password)) {
-            createTablesDB(connection);
-            importData(connection, products, orders, orderItems);
+            String createProductsTable = "CREATE TABLE products" +
+                    "(code VARCHAR(10) NOT NULL PRIMARY KEY," +
+                    "name VARCHAR(64) NOT NULL," +
+                    "price INT NOT NULL);";
+
+            String createOrdersTable = "CREATE TABLE orders" +
+                    "(id INT PRIMARY KEY," +
+                    "user_login VARCHAR(64) NOT NULL);";
+
+            String createOrdersItemsTable = "CREATE TABLE order_items" +
+                    "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+                    "order_id INT NOT NULL," +
+                    "product_code VARCHAR(10) NOT NULL," +
+                    "quantity INT NOT NULL," +
+                    "FOREIGN KEY (order_id) REFERENCES orders (id)," +
+                    "FOREIGN KEY (product_code) REFERENCES products (code));";
+            createTableDB(connection, createProductsTable);
+            createTableDB(connection, createOrdersTable);
+            createTableDB(connection, createOrdersItemsTable);
+            importProductsData(connection, products);
+            importOrdersData(connection, orders);
+            importOrderItemsData(connection, orderItems);
+
             System.out.println("Data has been imported successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void createTablesDB(Connection connection) throws SQLException {
-        String createProductsTable = "CREATE TABLE products" +
-                "(code VARCHAR(10) NOT NULL PRIMARY KEY," +
-                "name VARCHAR(64) NOT NULL," +
-                "price INT NOT NULL);";
-
-        String createOrdersTable = "CREATE TABLE orders" +
-                "(id INT PRIMARY KEY," +
-                "user_login VARCHAR(64) NOT NULL);";
-
-        String createOrdersItemsTable = "CREATE TABLE order_items" +
-                "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-                "order_id INT NOT NULL," +
-                "product_code VARCHAR(10) NOT NULL," +
-                "quantity INT NOT NULL," +
-                "FOREIGN KEY (order_id) REFERENCES orders (id)," +
-                "FOREIGN KEY (product_code) REFERENCES products (code));";
+    protected void createTableDB(Connection connection, String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute(createProductsTable);
-            statement.execute(createOrdersTable);
-            statement.execute(createOrdersItemsTable);
+            statement.execute(sql);
         }
     }
 
-    private void importData(Connection connection, Set<Product> products, Set<Order> orders, Set<OrderItem> orderItems) throws SQLException {
+    protected void importProductsData(Connection connection, Set<Product> products) throws SQLException { //, Set<Order> orders, Set<OrderItem> orderItems) throws SQLException {
         String sqlProducts = "INSERT INTO products VALUES(?, ?, ?)";
         for (Product product : products) {
             try (PreparedStatement statement = connection.prepareStatement(sqlProducts)) {
@@ -71,7 +74,9 @@ public class DataBaseImporter {
                 statement.execute();
             }
         }
+    }
 
+    private void importOrdersData(Connection connection, Set<Order> orders) throws SQLException {
         String sqlOrders = "INSERT INTO orders VALUES(?, ?)";
         for (Order order : orders) {
             try (PreparedStatement statement = connection.prepareStatement(sqlOrders)) {
@@ -80,7 +85,9 @@ public class DataBaseImporter {
                 statement.execute();
             }
         }
+    }
 
+    protected void importOrderItemsData(Connection connection, Set<OrderItem> orderItems) throws SQLException {
         String sqlOrderItems = "INSERT INTO order_items (order_id, product_code, quantity) VALUES(?, ?, ?)";
         for (OrderItem orderItem : orderItems) {
             try (PreparedStatement statement = connection.prepareStatement(sqlOrderItems)) {
@@ -92,4 +99,5 @@ public class DataBaseImporter {
         }
 
     }
+
 }
