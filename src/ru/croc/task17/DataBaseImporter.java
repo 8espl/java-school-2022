@@ -84,8 +84,8 @@ public class DataBaseImporter {
         String sqlOrderItems = "INSERT INTO order_items (order_id, product_code, quantity) VALUES(?, ?, ?)";
         for (OrderItem orderItem : orderItems) {
             try (PreparedStatement statement = connection.prepareStatement(sqlOrderItems)) {
-                statement.setInt(1, orderItem.getOrderID());
-                statement.setString(2, orderItem.getProductCode());
+                statement.setInt(1, orderItem.getOrder().getID());
+                statement.setString(2, orderItem.getProduct().getCode());
                 statement.setInt(3, orderItem.getQuantity());
                 statement.execute();
             }

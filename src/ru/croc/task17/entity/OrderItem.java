@@ -1,25 +1,25 @@
 package ru.croc.task17.entity;
 
 public class OrderItem {
-    private int orderID;
-    private String productCode;
+    private Order order;
+    private Product product;
     private int quantity = 1;
 
-    public OrderItem(int orderID, String productCode) {
-        this.orderID = orderID;
-        this.productCode = productCode;
+    public OrderItem(Order order, Product product) {
+        this.order = order;
+        this.product = product;
     }
 
     public void addItem() {
         this.quantity += 1;
     }
 
-    public int getOrderID() {
-        return orderID;
+    public Order getOrder() {
+        return order;
     }
 
-    public String getProductCode() {
-        return productCode;
+    public Product getProduct() {
+        return product;
     }
 
     public int getQuantity() {
