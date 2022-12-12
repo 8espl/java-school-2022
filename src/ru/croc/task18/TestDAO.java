@@ -32,7 +32,7 @@ public class TestDAO {
             System.out.println(orderDAO.createOrder("elvina", Arrays.asList(new Product("Т10", "Фотоаппарат", 50000),
                     new Product("Т8", "Графический планшет", 5000), new Product("Т2", "Беспроводная мышь", 100))));
 
-            System.out.println("Database has been changed.");
+            System.out.println("Database has been accessed successfully.");
         } catch (Exception e) {
             e.printStackTrace();
         }

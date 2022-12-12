@@ -1,5 +1,6 @@
 package ru.croc.task18.DAO;
 
+import ru.croc.task17.DataReader;
 import ru.croc.task17.entity.*;
 
 import java.sql.*;
@@ -30,40 +31,41 @@ public class OrderDAO {
      * Создание заказа. Для указанного пользователя в базе данных создается новый заказ с заданным списком товаров.
      */
     public Order createOrder(String userLogin, List<Product> products) throws Exception {
-        int ID = findLastOrderID() + 1;
-        Map<String, OrderItem> orderItemsMap = new HashMap<>();
+        int newOrderID = findLastOrderID() + 1;
+        Set<OrderItem> orderItems = new HashSet<>();
         ProductDAO productDAO = new ProductDAO(connection);
 
-        // <product_code, orderItem> чтобы посчитать сколько раз в одном заказе приобрели данный товар
         for (Product product : products) {
-            if (productDAO.findProduct(product.getCode()) == null) {
+            String productCode = product.getCode();
+            if (productDAO.findProduct(productCode) == null) {
                 throw new Exception("Product \"" + product.getName() + "\" doesn't exist in DB.");
             } else {
-                String productCode = product.getCode();
-                if (orderItemsMap.containsKey(productCode)) {
-                    orderItemsMap.get(productCode).addItem();
+                if (orderItems.stream().noneMatch(orderItem -> orderItem.getOrder().getID() == newOrderID && orderItem.getProduct().getCode().equals(productCode))) {
+                    orderItems.add(new OrderItem(new Order(newOrderID, userLogin), product));
                 } else {
-                    orderItemsMap.put(productCode, new OrderItem(ID, productCode));
+                    orderItems.stream()
+                            .filter(orderItem -> orderItem.getOrder().getID() == newOrderID && orderItem.getProduct().getCode().equals(productCode))
+                            .findFirst().get().addItem();
                 }
             }
         }
 
         try (PreparedStatement statement = connection.prepareStatement("INSERT INTO orders VALUES(?, ?);")) {
-            statement.setInt(1, ID);
+            statement.setInt(1, newOrderID);
             statement.setString(2, userLogin);
             statement.execute();
         }
 
         try (PreparedStatement statement = connection.prepareStatement("INSERT INTO order_items (order_id, product_code, quantity) VALUES(?, ?, ?);")) {
-            for (OrderItem orderItem : orderItemsMap.values()) {
-                statement.setInt(1, ID);
-                statement.setString(2, orderItem.getProductCode());
+            for (OrderItem orderItem : orderItems) {
+                statement.setInt(1, newOrderID);
+                statement.setString(2, orderItem.getProduct().getCode());
                 statement.setInt(3, orderItem.getQuantity());
                 statement.execute();
             }
 
         }
-        return new Order(ID, userLogin);
+        return new Order(newOrderID, userLogin);
     }
 }
 
