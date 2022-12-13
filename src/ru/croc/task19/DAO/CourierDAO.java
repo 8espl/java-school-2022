@@ -22,8 +22,9 @@ public class CourierDAO {
             statement.setString(1, courierID);
             try (ResultSet result = statement.executeQuery()) {
                 while (result.next()) {
-                    ordersToShip.put(result.getInt("id"),
-                            result.getString("user_login"));
+                    int orderID = result.getInt("id");
+                    String userLogin =  result.getString("user_login");
+                    ordersToShip.put(orderID, userLogin);
                 }
             }
         }

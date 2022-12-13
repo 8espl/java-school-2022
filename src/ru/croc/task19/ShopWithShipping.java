@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 
 public class ShopWithShipping {
     public static void main(String[] args) {
-        //args = new String[]{"src/ru/croc/task19/dataWithShipping.CSV"};
+        //args = new String[]{"src/ru/croc/task19/dataWithShippingInfo.CSV"};
         String connectionURL = "jdbc:h2:~/ShopWithShipping";
         String user = "sa";
         String password = "";
@@ -25,10 +25,10 @@ public class ShopWithShipping {
                     .forEach((orderID, userLogin) -> System.out.println("Order #" + orderID + " to user '"+ userLogin + "'"));
 
             UserDAO userDao = new UserDAO(connection);
-            String userLogin = "nikita";
+            String userLogin = "vasya";
             System.out.println("Orders to be delivered to user '" + userLogin + "': ");
             userDao.findShippingInfo(userLogin)
-                    .forEach((time, courierFullName) -> System.out.println(time + " by '"+ courierFullName + "'"));
+                    .forEach((order, info) -> System.out.println(info));
         }catch (Exception e) {
             e.printStackTrace();
         }
