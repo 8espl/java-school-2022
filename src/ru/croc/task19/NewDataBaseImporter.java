@@ -19,6 +19,7 @@ public class NewDataBaseImporter extends DataBaseImporter {
         super(source);
     }
 
+    @Override
     public void loadData(String connectionURL, String user, String password) {
         Set<Product> products = new HashSet<>();
         Set<Courier> couriers = new HashSet<>();

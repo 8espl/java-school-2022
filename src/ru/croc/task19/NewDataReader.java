@@ -46,6 +46,14 @@ public class NewDataReader extends DataReader {
         }
     }
 
+    /**
+     * @param couriers          набор уникальных курьеров
+     * @param courierID         id курьера из данной строки таблицы
+     * @param courierFirstName  имя курьера из данной строки таблицы
+     * @param courierSecondName фамилия курьера из данной строки таблицы
+     * @return новый созданный курьер, если прежде такой не встречался,
+     * или созданный прежде курьер с данным id
+     */
     private Courier readCourier(Set<Courier> couriers, String courierID, String courierFirstName, String courierSecondName) {
         Courier courierInLine;
 
@@ -59,7 +67,16 @@ public class NewDataReader extends DataReader {
         return courierInLine;
     }
 
-    private Order readOrder(Set<ShippingOrder> orders, int orderID, String userLogin, LocalDateTime shippingTime, Courier courierInLine) {
+    /**
+     * @param orders        набор уникальных заказов
+     * @param orderID       номер заказа в данной строке таблицы
+     * @param userLogin     логин пользователя в данной строке таблицы
+     * @param shippingTime  время доставки в данной строке таблицы
+     * @param courierInLine идентифицированный курьер из данной строки таблицы
+     * @return новый созданный доставляемый заказ, если прежде такой не встречался,
+     * или созданный прежде доставляемый заказ с данным номером
+     */
+    private ShippingOrder readOrder(Set<ShippingOrder> orders, int orderID, String userLogin, LocalDateTime shippingTime, Courier courierInLine) {
         ShippingOrder orderInLine;
 
         if (orders.stream().noneMatch(order -> order.getID() == orderID)) {

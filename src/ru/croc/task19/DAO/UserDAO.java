@@ -24,9 +24,9 @@ public class UserDAO {
             try (ResultSet result = statement.executeQuery()) {
                 while (result.next()) {
                     int orderID= result.getInt("ID");
-                   String time = result.getTimestamp("shipping_time").toLocalDateTime().format(formatter);
-                   String fullName = result.getString("first_name") + " " + result.getString("second_name");
-                   shippingInfo.put(orderID,  time + " by " + fullName);
+                    String time = result.getTimestamp("shipping_time").toLocalDateTime().format(formatter);
+                    String fullName = result.getString("first_name") + " " + result.getString("second_name");
+                    shippingInfo.put(orderID,  time + " by " + fullName);
                 }
             }
         }
