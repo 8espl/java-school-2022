@@ -27,7 +27,7 @@ public class AgeGroup {
     public String toString() {
         StringBuilder groupPrint = new StringBuilder();
 
-        if (SplitByAge.getMaxAge() != getEndAge()) {
+        if (SplitterByAge.MAX_AGE != getEndAge()) {
             groupPrint.append(getStartAge()).append("-").append(getEndAge()).append(": ");
         } else {
             groupPrint.append(getStartAge()).append("+: ");

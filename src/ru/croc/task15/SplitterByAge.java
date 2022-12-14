@@ -3,37 +3,25 @@ package ru.croc.task15;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class SplitByAge {
-    private final static int MIN_AGE = 0;
-    private final static int MAX_AGE = 123;
+public class SplitterByAge {
+    public final static int MIN_AGE = 0;
+    public final static int MAX_AGE = 123;
 
-    public static void main(String[] args) {
-        //args = new String[]{"18", "25", "35", "45", "60", "80", "100"};
-        List<Integer> ages = Arrays.stream(Stream.of(args).mapToInt(Integer::parseInt).toArray()).boxed().toList();
-        List<AgeGroup> ageGroups = new ArrayList<>();
+    public void split(String[] ageGroupBounds) throws Exception {
+        List<Integer> ages = Arrays.stream(Stream.of(ageGroupBounds).mapToInt(Integer::parseInt).toArray()).boxed().toList();
+        List<AgeGroup> ageGroups = createAgeGroups(ages);
 
-        try {
-            ageGroups = createAgeGroups(ages);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        Scanner in = new Scanner(System.in);
-        System.out.println("Введите респондентов: <ФИО>,<возраст>. Для завершения введите \"END\".");
-
-        // составляем список респондентов из введенных данных
         List<String> respondents = new ArrayList<>();
-        while (in.hasNextLine()) {
-            String nextPerson = in.nextLine();
-            if (nextPerson.equals("END")) break;
-            respondents.add(nextPerson);
+        try (Scanner in = new Scanner(System.in)) {
+            System.out.println("Введите респондентов: <ФИО>,<возраст>. Для завершения введите \"END\".");
+            while (in.hasNextLine()) {
+                String nextPerson = in.nextLine();
+                if (nextPerson.equals("END")) break;
+                respondents.add(nextPerson);
+            }
         }
 
-        try {
-            splitToAgeGroups(respondents, ageGroups);
-        } catch (Exception wrongAge) {
-            System.out.println(wrongAge.getMessage());
-        }
+        splitToAgeGroups(respondents, ageGroups);
 
         for (AgeGroup ageGroup : ageGroups) {
             if (!ageGroup.getGroupMembers().isEmpty()) {
@@ -42,7 +30,7 @@ public class SplitByAge {
         }
     }
 
-    static List<AgeGroup> createAgeGroups(List<Integer> ages) throws Exception {
+    private List<AgeGroup> createAgeGroups(List<Integer> ages) throws Exception {
         List<AgeGroup> groups = new ArrayList<>(ages.size() + 1);
 
         // проверяем, правильно ли были введены границы возрастных групп
@@ -64,7 +52,7 @@ public class SplitByAge {
         }
     }
 
-    static void splitToAgeGroups(List<String> respondents, List<AgeGroup> groups) throws Exception {
+    private void splitToAgeGroups(List<String> respondents, List<AgeGroup> groups) throws Exception {
         for (String respondent : respondents) {
             Person person = new Person(respondent);
             int age = person.getAge();
@@ -79,9 +67,5 @@ public class SplitByAge {
                 }
             }
         }
-    }
-
-    public static int getMaxAge() {
-        return MAX_AGE;
     }
 }
