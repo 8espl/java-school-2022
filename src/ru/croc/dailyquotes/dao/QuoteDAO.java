@@ -6,16 +6,12 @@ import ru.croc.dailyquotes.entity.Quote;
 import java.sql.*;
 
 public class QuoteDAO {
-    private Connection CONNECTION;
+    private final Connection CONNECTION;
 
-    public QuoteDAO(Connection connection) {
-        this.CONNECTION = connection;
+    public QuoteDAO(Connection CONNECTION) {
+        this.CONNECTION = CONNECTION;
     }
 
-    /**
-     *
-     * Возвращает случайную цитату из заданной категории
-     */
     public Quote getRandomQuoteInCategory(Category category) throws SQLException {
         Quote quote = null;
         String sql = "SELECT * FROM quote_info WHERE category = ? ORDER BY RAND() limit 1;";

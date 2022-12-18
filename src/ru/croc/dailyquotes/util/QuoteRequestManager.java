@@ -60,7 +60,7 @@ public class QuoteRequestManager implements Runnable {
         switch (request) {
             case LIKE -> {
                 if (!isLiked) {
-                    likeDAO.addToFavorites(userId, dailyQuote.getID());
+                    likeDAO.addToFavorites(userId, dailyQuote.getId());
                     this.isLiked = true;
                     return "Liked!";
                 } else {
@@ -75,8 +75,7 @@ public class QuoteRequestManager implements Runnable {
             case SHOW_FAVORITES -> {
                 StringBuilder sb = new StringBuilder();
                 userDAO.getLikedQuotes(userId)
-                        .forEach(likedQuote -> sb.append(likedQuote.getText()).append(" ")
-                                .append(likedQuote.getAuthor()).append("\n"));
+                        .forEach(likedQuote -> sb.append(likedQuote.toString()).append("\n"));
                 return sb.toString();
             }
         }

@@ -21,7 +21,7 @@ public class Quote {
         this.category = category;
     }
 
-    public int getID() {
+    public int getId() {
         return id;
     }
 

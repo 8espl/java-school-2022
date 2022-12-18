@@ -64,7 +64,7 @@ public class DBImporter {
         String sqlQuotes = "INSERT INTO quote_info VALUES(?, ?, ?, ?)";
         for (Quote quote : quotes) {
             try (PreparedStatement statement = connection.prepareStatement(sqlQuotes)) {
-                statement.setInt(1, quote.getID());
+                statement.setInt(1, quote.getId());
                 statement.setString(2, quote.getText());
                 statement.setString(3, quote.getAuthor());
                 statement.setString(4, quote.getCategory().toString().toLowerCase());

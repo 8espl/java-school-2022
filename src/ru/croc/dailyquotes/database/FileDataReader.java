@@ -3,11 +3,14 @@ package ru.croc.dailyquotes.database;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.croc.dailyquotes.dao.QuoteDAO;
 import ru.croc.dailyquotes.entity.Quote;
 import ru.croc.dailyquotes.entity.User;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class FileDataReader {
@@ -21,7 +24,7 @@ public class FileDataReader {
 
     public void readFiles(List<Quote> quotes, Set<User> users) throws IOException {
         readQuotes(quotes);
-        readUsers(users);
+        readUsers(users, quotes);
     }
 
     private void readQuotes(List<Quote> quotes) throws IOException {
@@ -37,15 +40,14 @@ public class FileDataReader {
         quotes.removeIf(quote -> quote.getAuthor().length() > 255 || quote.getText().length() > 500);
     }
 
-    private void readUsers(Set<User> users) throws IOException {
+    private void readUsers(Set<User> users, List<Quote> quotes) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(CLIENT_INFO_SOURCE))) {
             String line;
-            String[] info;
+            Random random = new Random();
+            int maxQuoteNum = quotes.size();
             while ((line = reader.readLine()) != null) {
-                info = line.split(",");
-                int userId = Integer.parseInt(info[0]);
-                int dailyQuoteId = Integer.parseInt(info[1]);
-                User user = new User(userId, dailyQuoteId);
+                int userId = Integer.parseInt(line);
+                User user = new User(userId, quotes.get(random.nextInt(maxQuoteNum)).getId());
                 users.add(user);
             }
         }

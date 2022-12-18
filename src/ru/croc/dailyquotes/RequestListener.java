@@ -14,6 +14,16 @@ public class RequestListener {
     private BufferedWriter writer;
     private int userId;
 
+    public static void main(String[] args) {
+        try {
+            Socket socket = new Socket("127.0.0.1", 2022);
+            RequestListener requestListener = new RequestListener(socket);
+            requestListener.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public RequestListener(Socket socket) {
         try {
             this.socket = socket;
@@ -54,11 +64,5 @@ public class RequestListener {
             ClosingEverythingModule closingModule = new ClosingEverythingModule();
             closingModule.closeEverything(socket, reader, writer);
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("127.0.0.1", 2022);
-        RequestListener requestListener = new RequestListener(socket);
-        requestListener.start();
     }
 }

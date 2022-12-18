@@ -34,7 +34,7 @@ public class UserDAO {
 
         String sql = "UPDATE user_info SET daily_quote_id = ? WHERE id = ?;";
         try (PreparedStatement statement = CONNECTION.prepareStatement(sql)) {
-            statement.setInt(1, newDailyQuote.getID());
+            statement.setInt(1, newDailyQuote.getId());
             statement.setInt(2, userId);
             statement.execute();
         }
